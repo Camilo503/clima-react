@@ -1,16 +1,18 @@
 import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import Formulario from './components/Formulario.jsx'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const listaClimas = [];
+  const [climas, setClimas] = useState(listaClimas);
+
 
   return (
-    <h1>
-      Clima
-    </h1>
+    <div>
+      <h1>
+        Clima
+      </h1>
+      <Formulario/>
+    </div>  
   )
 }
 
