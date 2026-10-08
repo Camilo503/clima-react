@@ -1,16 +1,23 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 import { useFetch } from './hooks/UseFetch.jsx';
-import Formulario from './components/Formulario.jsx'
+import Formulario from './components/Formulario.jsx';
 import ListaCiudades from './components/ListaCiudades.jsx';
+import Pronostico from './components/Pronostico.jsx';
 
 function App() {
   const [texto, setTexto] = useState('');
+  const [ciudadActual, setCiudadActual] = useState(null);
 
-  const url = texto.length >= 3 
+  const urlCiudades = texto.length >= 3 
     ? `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(texto)}&count=5&language=es` 
     : null;
+  const reqCiudades = useFetch(urlCiudades);
+  const listaCiudades = reqCiudades.datos?.results || [];
 
-  const ciudades = useFetch(url);
+  const urlClima = ciudadActual 
+    ? `https://api.open-meteo.com/v1/forecast?latitude=${ciudadActual.latitude}&longitude=${ciudadActual.longitude}&current=temperature_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto`
+    : null;
+  const reqClima = useFetch(urlClima);
 
   return (
     <div>
@@ -20,14 +27,25 @@ function App() {
       <Formulario texto={texto} setTexto={setTexto}/>
       <div className="mt-4">
         <ListaCiudades 
-          ciudades={ciudades.datos} 
-          cargando={ciudades.cargando} 
-          error={ciudades.error} 
+          ciudades={listaCiudades} 
+          cargando={reqCiudades.cargando} 
+          error={reqCiudades.error} 
           texto={texto} 
+          onSeleccionar={setCiudadActual}
         />
       </div>
+      {ciudadActual && (
+         <div className="mt-6">
+            <Pronostico 
+              ciudad={ciudadActual} 
+              clima={reqClima.datos} 
+              cargando={reqClima.cargando} 
+              error={reqClima.error} 
+            />
+         </div>
+      )}
     </div>  
-  )
+  );
 }
 
 export default App

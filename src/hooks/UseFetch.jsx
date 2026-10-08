@@ -23,7 +23,7 @@ export function useFetch(url) {
                 if (!r.ok) throw new Error("Error al consultar la API");
                 
                 const d = await r.json();
-                setDatos(d.results ?? []);
+                setDatos(d);
                 
             } catch (e) {
                 if (e.name !== "AbortError") {

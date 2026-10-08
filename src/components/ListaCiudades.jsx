@@ -1,6 +1,6 @@
 import Ciudad from './Ciudad.jsx';
 
-export default function ListaCiudades({ ciudades, cargando, error, texto }) {
+export default function ListaCiudades({ ciudades, cargando, error, texto, onSeleccionar }) {
   if (cargando) return <p>Buscando…</p>;
   
   if (error) return <p className="text-red-500">Error: {error}</p>;
@@ -12,7 +12,7 @@ export default function ListaCiudades({ ciudades, cargando, error, texto }) {
   return (
     <ul>
       {ciudades.map((ciudad) => (
-        <Ciudad key={ciudad.id} ciudad={ciudad} />
+        <Ciudad key={ciudad.id} ciudad={ciudad} onSeleccionar={onSeleccionar}/>
       ))}
     </ul>
   );
