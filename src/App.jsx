@@ -3,12 +3,15 @@ import { useFetch } from './hooks/UseFetch.jsx';
 import Formulario from './components/Formulario.jsx';
 import ListaCiudades from './components/ListaCiudades.jsx';
 import Pronostico from './components/Pronostico.jsx';
+import { useDebounce } from './hooks/useDebounce.jsx';
 
 function App() {
   const [texto, setTexto] = useState('');
   const [ciudadActual, setCiudadActual] = useState(null);
 
-  const urlCiudades = texto.length >= 3 
+  const textoRetrasado = useDebounce(texto, 400);
+  
+  const urlCiudades = textoRetrasado.length >= 3 
     ? `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(texto)}&count=5&language=es` 
     : null;
   const reqCiudades = useFetch(urlCiudades);
@@ -41,7 +44,7 @@ function App() {
           ciudades={listaCiudades} 
           cargando={reqCiudades.cargando} 
           error={reqCiudades.error} 
-          texto={texto} 
+          texto={textoRetrasado} 
           onSeleccionar={setCiudadActual}
         />
       </div>
