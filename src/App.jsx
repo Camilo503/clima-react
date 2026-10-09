@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useFetch } from './hooks/UseFetch.jsx';
 import Formulario from './components/Formulario.jsx';
 import ListaCiudades from './components/ListaCiudades.jsx';
@@ -19,12 +19,23 @@ function App() {
     : null;
   const reqClima = useFetch(urlClima);
 
+  const abrirApp = useRef(null);
+  useEffect(() => {
+  abrirApp.current.focus();
+  }, []);
+
+  function limpiar() {
+  setTexto('');
+  setCiudadActual(null);
+  abrirApp.current.focus();
+  }
+
   return (
     <div>
       <h1>
         Clima
       </h1>
-      <Formulario texto={texto} setTexto={setTexto}/>
+      <Formulario texto={texto} setTexto={setTexto} abrirApp={abrirApp} limpiar={limpiar}/>
       <div className="mt-4">
         <ListaCiudades 
           ciudades={listaCiudades} 
