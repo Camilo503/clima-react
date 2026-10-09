@@ -1,17 +1,24 @@
 import { describirClima, obtenerDiaCorto } from '../clima.jsx';
+import { useMemo } from 'react';
 
 export default function Pronostico({ ciudad, clima, cargando, error }) {
+  const resumenSemanal = useMemo ( () => {
+    if (!clima || !clima.daily) return null;
+    console.log("calculando resumen semanal");
+    const { temperature_2m_max, temperature_2m_min, time } = clima.daily;
+    // Lógica para la semana (Máxima, mínima y día más caluroso)
+    const maxSemana = Math.max(...temperature_2m_max);
+    const minSemana = Math.min(...temperature_2m_min);
+    const indiceMasCaluroso = temperature_2m_max.indexOf(maxSemana);
+    const diaMasCaluroso = time[indiceMasCaluroso];
+    return { maxSemana, minSemana, diaMasCaluroso };
+  }, [clima]);
+  
     if (cargando) return <p>Cargando pronóstico...</p>;
     if (error) return <p className="text-red-500">Error: {error}</p>;
     if (!clima || !clima.current || !clima.daily) return null;
 
     const { current, daily } = clima;
-
-    // Lógica para la semana (Máxima, mínima y día más caluroso)
-    const maxSemana = Math.max(...daily.temperature_2m_max);
-    const minSemana = Math.min(...daily.temperature_2m_min);
-    const indiceMasCaluroso = daily.temperature_2m_max.indexOf(maxSemana);
-    const diaMasCaluroso = daily.time[indiceMasCaluroso];
 
     const sacarEmoji = (codigo) => describirClima(codigo).split(' ')[0];
 
@@ -22,7 +29,7 @@ export default function Pronostico({ ciudad, clima, cargando, error }) {
             <span className="text-3xl font-bold">{current.temperature_2m} °C</span> · {describirClima(current.weather_code)} · viento {current.wind_speed_10m} km/h
           </p>
           <p className="bg-amber-50 rounded p-2 text-sm text-slate-800">
-            Esta semana: máxima {maxSemana} °C, mínima {minSemana} °C. El día más caluroso es el {diaMasCaluroso}.
+             Esta semana: máxima {resumenSemanal.maxSemana} °C, mínima {resumenSemanal.minSemana} °C. El día más caluroso es el {resumenSemanal.diaMasCaluroso}.
           </p>
           <div className="grid grid-cols-7 gap-1 text-center text-xs">
             {daily.time.map((fecha, i) => (
